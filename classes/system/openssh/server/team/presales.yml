@@ -1,0 +1,13 @@
+classes:
+- system.openssh.server.team.members.deprecated.asteer
+- system.openssh.server.team.members.deprecated.iostojic
+- system.openssh.server.team.members.deprecated.pmichalec
+- system.openssh.server.team.members.deprecated.samstoelinga
+- system.openssh.server.team.members.deprecated.sbraun
+- system.openssh.server.team.members.andreidanin
+- system.openssh.server.team.members.brucemathews
+- system.openssh.server.team.members.ryanday
+- system.openssh.server.team.members.sachintripathi
+parameters:
+  _param:
+    linux_system_user_sudo: true

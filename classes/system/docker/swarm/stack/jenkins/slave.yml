@@ -1,0 +1,3 @@
+# jnlp slave
+classes:
+- system.docker.swarm.stack.jenkins.jnlp_slave_multi

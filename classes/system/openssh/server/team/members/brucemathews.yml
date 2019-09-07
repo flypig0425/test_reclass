@@ -1,0 +1,20 @@
+parameters:
+  linux:
+    system:
+      user:
+        bmathews:
+          enabled: true
+          name: bmathews
+          sudo: ${_param:linux_system_user_sudo}
+          full_name: Bruce Mathews
+          home: /home/bmathews
+          email: bmathews@mirantis.com
+  openssh:
+    server:
+      user:
+        bmathews:
+          enabled: true
+          public_keys:
+          - key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDdAYo193PNG03Da0EuqfKu+cFM8SqPCYs8rniu+RIhJtlEiezfdYX95zO8omR675pjmw0CgZQB6Bsv9G4eMLS+qpmL0gFWI3/qwDacZGgsLr5iCo6bnIgWx92Ze56O7T4drho8ZK2cnmlUtVK5fhAgKHv/fzssmumzUkyD0+n0qJZIvA9eUm4T55X3IRFqxe321wLQDmQOxUkSv+zAClIEbsR8IUkRiTT6y0IbozrTXJaUUwrBhd+qr68NQXnAiMIP7v9S2TYcL1Ufl2M2W7RB18sGeLmz9cEXNQ+2SZv4ZVeK2O6VnLnQoJjCwkyVBJ2nIuTqZNy51Std3xpkh0ah bmathews@1205-W541
+          user: ${linux:system:user:bmathews}
+

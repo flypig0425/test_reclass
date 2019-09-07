@@ -1,0 +1,9 @@
+classes:
+- system.openssh.server.team.members.dburmistrov
+- system.openssh.server.team.members.sotpuschennikov
+# Deprecated users
+- system.openssh.server.team.members.deprecated.dkaiharodsev
+- system.openssh.server.team.members.deprecated.rkamaldinov
+parameters:
+  _param:
+    linux_system_user_sudo: true

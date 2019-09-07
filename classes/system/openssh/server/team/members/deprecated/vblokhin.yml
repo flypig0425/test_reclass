@@ -1,0 +1,16 @@
+parameters:
+  linux:
+    system:
+      user:
+        vblokhin:
+          email: disabled
+          enabled: false
+          full_name: disabled
+          home: /home/vblokhin
+          name: vblokhin
+  openssh:
+    server:
+      user:
+        vblokhin:
+          enabled: false
+          user: ${linux:system:user:vblokhin}

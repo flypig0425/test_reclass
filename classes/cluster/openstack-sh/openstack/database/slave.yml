@@ -1,0 +1,7 @@
+classes:
+- system.salt.minion.cert.mysql.server
+- service.galera.ssl.slave
+#- haproxy.proxy.listen.openstack.galera.clustercheck
+- cluster.openstack-sh.infra
+- cluster.openstack-sh.openstack.networking.virtual
+

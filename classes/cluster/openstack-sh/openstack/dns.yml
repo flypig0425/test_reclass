@@ -1,0 +1,4 @@
+classes:
+- system.powerdns.server.cluster
+- cluster.openstack-sh.infra
+- cluster.openstack-sh.openstack.networking.virtual

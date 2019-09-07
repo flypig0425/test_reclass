@@ -1,0 +1,16 @@
+parameters:
+  linux:
+    system:
+      user:
+        schipiga:
+          email: disabled
+          enabled: false
+          full_name: disabled
+          home: /home/schipiga
+          name: schipiga
+  openssh:
+    server:
+      user:
+        schipiga:
+          enabled: false
+          user: ${linux:system:user:schipiga}

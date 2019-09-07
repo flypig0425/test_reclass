@@ -1,0 +1,16 @@
+classes:
+- service.keepalived.cluster.single
+parameters:
+  _param:
+    keepalived_rabbitmq_vrrp_script_content: 'rabbitmqctl cluster_status | grep -q "running_nodes.*$(hostname)"'
+  keepalived:
+    cluster:
+      vrrp_scripts:
+        rabbitmq_vip:
+          content: ${_param:keepalived_rabbitmq_vrrp_script_content}
+          interval: 10
+          rise: 1
+          fall: 1
+      instance:
+        VIP:
+          track_script: rabbitmq_vip

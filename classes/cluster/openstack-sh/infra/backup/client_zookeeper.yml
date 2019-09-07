@@ -1,0 +1,11 @@
+classes:
+- system.zookeeper.backup.client.single
+- cluster.openstack-sh.infra.backup.allow_root_ssh
+parameters:
+  zookeeper:
+    backup:
+      client:
+        target:
+          backup_dir: /srv/volumes/backup/zookeeper
+        containers:
+        - opencontrail_controller_1

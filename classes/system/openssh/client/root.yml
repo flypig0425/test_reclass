@@ -1,0 +1,13 @@
+applications:
+- openssh
+parameters:
+  openssh:
+    client:
+      enabled: True
+      user:
+        root:
+          enabled: True
+          user: ${linux:system:user:root}
+          private_key:
+            key: ${_param:root_private_key}
+            type: rsa

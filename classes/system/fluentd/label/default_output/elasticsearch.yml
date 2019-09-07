@@ -1,0 +1,14 @@
+classes:
+- service.fluentd.agent.output.elasticsearch
+- system.fluentd.label.default_output.filter.common
+parameters:
+  fluentd:
+    agent:
+      config:
+        label:
+          default_output:
+            match:
+              elasticsearch_output:
+                host: ${_param:fluentd_elasticsearch_host}
+                port: ${_param:fluentd_elasticsearch_port}
+                scheme: ${_param:fluentd_elasticsearch_scheme}

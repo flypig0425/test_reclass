@@ -1,0 +1,110 @@
+classes:
+- system.linux.system.repo.mcp.apt_mirantis.glusterfs
+- system.glusterfs.client.cluster
+- system.glusterfs.client.volume.salt_pki
+- system.nginx.server.single
+- system.nginx.server.stream.gerrit_ssh
+- system.nginx.server.proxy.cicd.gerrit
+- system.nginx.server.proxy.cicd.jenkins
+- system.nginx.server.proxy.openstack_api
+- system.nginx.server.proxy.openstack_vnc
+- system.nginx.server.proxy.openstack.manila
+- system.nginx.server.proxy.openstack.ironic
+- system.nginx.server.proxy.openstack.gnocchi
+- system.nginx.server.proxy.openstack.aodh
+- system.nginx.server.proxy.openstack.panko
+- system.nginx.server.proxy.openstack.designate
+- system.nginx.server.proxy.ceph_radosgw
+- system.nginx.server.proxy.openstack.ceilometer
+- system.nginx.server.proxy.openstack.octavia
+- system.nginx.server.proxy.ssl
+- system.horizon.server.single
+- system.salt.minion.cert.proxy.openstack
+- system.salt.minion.cert.proxy.pki
+- system.sphinx.server.doc.reclass
+- system.keepalived.cluster.instance.openstack_proxy_vip
+- system.haproxy.proxy.single
+- cluster.openstack-sh.openstack.dashboard
+- cluster.openstack-sh.stacklight.proxy
+- cluster.openstack-sh.openstack.networking.virtual
+- cluster.openstack-sh.infra
+parameters:
+  _param:
+    keepalived_vip_interface: ens6
+    keepalived_vip_virtual_router_id: 240
+    nginx_proxy_openstack_glance_image_size: 30000m
+    ironic_service_host: ${_param:openstack_control_address}
+    nginx_proxy_headers:
+      X-Forwarded-For:
+        enabled: true
+        value: '$proxy_add_x_forwarded_for'
+      X-Forwarded-Proto:
+        enabled: true
+        value: '$scheme'
+      X-Forwarded-Port:
+        enabled: true
+        value: '$server_port'
+      Host:
+        enabled: true
+        value: '$host:$server_port'
+    horizon_identity_encryption: ssl
+    nginx_proxy_openstack_nova_protocol: 'https'
+    nginx_proxy_openstack_keystone_protocol: 'https'
+    nginx_proxy_openstack_glance_protocol: 'https'
+    nginx_proxy_openstack_cinder_protocol: 'https'
+    nginx_proxy_openstack_heat_protocol: 'https'
+    nginx_proxy_openstack_neutron_protocol: 'https'
+    nginx_proxy_openstack_placement_protocol: 'https'
+    nginx_proxy_openstack_ceilometer_protocol: 'https'
+    nginx_proxy_openstack_aodh_protocol: 'https'
+    nginx_proxy_openstack_panko_protocol: 'https'
+    nginx_proxy_openstack_gnocchi_protocol: 'https'
+    nginx_proxy_openstack_manila_protocol: 'https'
+    nginx_proxy_openstack_designate_protocol: 'https'
+    nginx_proxy_openstack_octavia_protocol: 'https'
+    nginx_proxy_ssl_enabled: true
+    nginx_proxy_ssl:
+      authority: ${_param:salt_minion_ca_authority}
+      key_file:  /srv/salt/pki/${_param:cluster_name}/${salt:minion:cert:proxy:common_name}.key
+      cert_file: /srv/salt/pki/${_param:cluster_name}/${salt:minion:cert:proxy:common_name}.crt
+      chain_file: /srv/salt/pki/${_param:cluster_name}/${salt:minion:cert:proxy:common_name}-with-chain.crt
+    cluster_vip_address: ${_param:openstack_proxy_address}
+    apache_ssl:
+      enabled: true
+      authority: ${_param:salt_minion_ca_authority}
+      engine: salt
+      key_file:  /srv/salt/pki/${_param:cluster_name}/${salt:minion:cert:proxy:common_name}.key
+      cert_file: /srv/salt/pki/${_param:cluster_name}/${salt:minion:cert:proxy:common_name}.crt
+      chain_file: /srv/salt/pki/${_param:cluster_name}/${salt:minion:cert:proxy:common_name}-with-chain.crt
+    openstack_memcached_server_bind_address: ${_param:single_address}
+  # wait for Gluster /srv/salt/pki mount before starting
+  nginx:
+    server:
+      wait_for_service:
+        - srv-salt-pki.mount
+      site:
+        # Remove unneeded headers for sites that having extra apache
+        # proxy for SSL termination on controller side to make sure
+        # links are generated correctly in response.
+        nginx_proxy_openstack_api_glance:
+          proxy_set_header: ${_param:nginx_proxy_headers}
+        nginx_proxy_openstack_api_heat:
+          proxy_set_header: ${_param:nginx_proxy_headers}
+        nginx_proxy_openstack_api_heat_cfn:
+          proxy_set_header: ${_param:nginx_proxy_headers}
+        nginx_proxy_openstack_api_heat_cloudwatch:
+          proxy_set_header: ${_param:nginx_proxy_headers}
+        nginx_proxy_openstack_api_neutron:
+          proxy_set_header: ${_param:nginx_proxy_headers}
+        nginx_proxy_openstack_api_nova:
+          proxy_set_header: ${_param:nginx_proxy_headers}
+        nginx_proxy_openstack_api_aodh:
+          proxy_set_header: ${_param:nginx_proxy_headers}
+        nginx_proxy_openstack_api_designate:
+          proxy_set_header: ${_param:nginx_proxy_headers}
+        nginx_proxy_openstack_api_octavia:
+          proxy_set_header: ${_param:nginx_proxy_headers}
+        ceph_radosgw:
+          proxy:
+            protocol: https
+

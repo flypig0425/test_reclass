@@ -1,0 +1,82 @@
+
+classes:
+- system.linux.system.repo.mcp.apt_mirantis.glusterfs
+- system.salt.control.virt
+- system.salt.control.cluster
+- system.linux.system.repo.mcp.apt_mirantis.openstack
+- system.salt.control.cluster.openstack_control_cluster
+- system.salt.control.cluster.openstack_proxy_cluster
+- system.salt.control.cluster.openstack_database_cluster
+- system.salt.control.cluster.openstack_message_queue_cluster
+- system.salt.control.cluster.openstack_manila_cluster
+- system.salt.control.cluster.openstack_baremetal_cluster
+- system.salt.control.cluster.openstack_telemetry_cluster
+- system.salt.control.cluster.openstack_dns_cluster
+- system.salt.control.sizes.openstack.compact
+- system.salt.control.placement.openstack.compact
+- system.salt.control.sizes.ovs.compact
+- system.salt.control.placement.ovs.compact
+- system.salt.control.cluster.openstack_benchmark_single
+- system.salt.control.cluster.stacklight_server_cluster
+- system.salt.control.cluster.stacklight_log_cluster
+- system.salt.control.cluster.stacklight_telemetry_cluster
+- system.salt.control.sizes.stacklight.compact
+- system.salt.control.placement.stacklight.compact
+- system.salt.control.cluster.cicd_control_cluster
+- system.salt.control.sizes.cicd.compact
+- system.salt.control.placement.cicd.compact
+- system.linux.system.repo.mcp.apt_mirantis.ceph
+- system.linux.system.repo.mcp.apt_mirantis.update.ceph
+- system.salt.control.cluster.ceph_mon_cluster
+- system.salt.control.cluster.ceph_rgw_cluster
+- system.salt.control.sizes.ceph
+- cluster.openstack-sh.infra
+- cluster.openstack-sh.infra.networking.kvm
+parameters:
+  _param:
+    cluster_vip_address: ${_param:infra_kvm_address}
+    cluster_node01_address: ${_param:infra_kvm_node01_address}
+    cluster_node02_address: ${_param:infra_kvm_node02_address}
+    cluster_node03_address: ${_param:infra_kvm_node03_address}
+    deploy_nic: ens3
+    primary_first_nic: ens4
+    primary_second_nic: ens5
+    salt_control_cluster_rng_backend: '/dev/urandom'
+  virt:
+    nic:
+      default:
+        eth1:
+          bridge: br-mgm
+        eth0:
+          bridge: br-ctl
+  # If you want to use list:
+  #    control:
+  #      - name: eth1
+  #        bridge: br_mgm
+  #        model: virtio
+  #      - name: eth2
+  #        bridge: br_ctl
+  #        model: virtio
+  #      - name: eth3
+  #        bridge: br_proxy
+  #        model: virtio
+  #   system:
+  #     package:
+  #       linux-image-4.8.0-39-generic:
+  #         version: latest
+  #       linux-headers-4.8.0-39-generic:
+  #         version: latest
+  #       linux-image-extra-4.8.0-39-generic:
+  #         version: latest
+  #       linux-headers-4.8.0-39:
+  #         version: latest
+  #     user:
+  #       root:
+  #         enabled: true
+  #         name: root
+  #         home: /root
+  #         # Password is cloudlab, comment out, configure your SSH key bellow
+  #         # and disable password auth
+  #         password: $6$0Qqj.6l.$T9k9Onm9pIDo6ULABVBRNogyizG.9CnwQ4bvI4xH.AWeIGHbLyFU87ejMTtKvAAyd3dncRYbeUV.VbnXJU2u./
+
+

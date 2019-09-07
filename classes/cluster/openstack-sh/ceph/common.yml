@@ -1,0 +1,30 @@
+classes:
+- system.linux.system.repo.mcp.apt_mirantis.ceph
+- system.linux.system.repo.mcp.apt_mirantis.update.ceph
+- cluster.openstack-sh.infra
+parameters:
+  ceph:
+    common:
+      public_network: ${_param:ceph_public_network_subset}.0/24
+      cluster_network: ${_param:ceph_cluster_network_subset}.0/24
+      keyring:
+        glance:
+          name: ${_param:glance_storage_user}
+          caps:
+            mon: 'allow r, allow command \"osd blacklist\"'
+            osd: "profile rbd pool=images"
+        cinder:
+          name: ${_param:cinder_storage_user}
+          caps:
+            mon: 'allow r, allow command \"osd blacklist\"'
+            osd: "profile rbd pool=volumes, profile rbd-read-only pool=images, profile rbd pool=${_param:cinder_ceph_backup_pool}"
+        nova:
+          name: ${_param:nova_storage_user}
+          caps:
+            mon: 'allow r, allow command \"osd blacklist\"'
+            osd: "profile rbd pool=vms, profile rbd-read-only pool=images"
+        gnocchi:
+          name: ${_param:gnocchi_storage_user}
+          caps:
+            mon: 'allow r, allow command \"osd blacklist\"'
+            osd: "profile rbd pool=${_param:gnocchi_storage_pool}"

@@ -1,0 +1,225 @@
+parameters:
+  reclass:
+    storage:
+      data_source:
+        engine: local
+      node:
+        infra_kvm_node01:
+          classes:
+          - cluster.openstack-sh.infra.glusterfs
+          params:
+            keepalived_vip_priority: 100
+            linux_system_codename: xenial
+        infra_kvm_node02:
+          classes:
+          - cluster.openstack-sh.infra.glusterfs
+          params:
+            keepalived_vip_priority: 101
+            linux_system_codename: xenial
+        infra_kvm_node03:
+          classes:
+          - cluster.${_param:cluster_name}.infra.backup.server
+          - cluster.openstack-sh.infra.glusterfs
+          params:
+            keepalived_vip_priority: 102
+            linux_system_codename: xenial
+        stacklight_telemetry_node01:
+          params:
+            deploy_address: ${_param:stacklight_telemetry_node01_deploy_address}
+        stacklight_telemetry_node02:
+          params:
+            deploy_address: ${_param:stacklight_telemetry_node02_deploy_address}
+        stacklight_telemetry_node03:
+          params:
+            deploy_address: ${_param:stacklight_telemetry_node03_deploy_address}
+        stacklight_log_node01:
+          classes:
+          - system.elasticsearch.client.single
+          - system.kibana.client.single
+          params:
+            deploy_address: ${_param:stacklight_log_node01_deploy_address}
+        stacklight_log_node02:
+          params:
+            deploy_address: ${_param:stacklight_log_node02_deploy_address}
+        stacklight_log_node03:
+          params:
+            deploy_address: ${_param:stacklight_log_node03_deploy_address}
+        stacklight_server_node01:
+          params:
+            deploy_address: ${_param:stacklight_monitor_node01_deploy_address}
+        stacklight_server_node02:
+          params:
+            deploy_address: ${_param:stacklight_monitor_node02_deploy_address}
+        stacklight_server_node03:
+          params:
+            deploy_address: ${_param:stacklight_monitor_node03_deploy_address}
+        openstack_control_node01:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:openstack_control_node01_deploy_address}
+          classes:
+          - cluster.${_param:cluster_name}.openstack.control_init
+        openstack_control_node02:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:openstack_control_node02_deploy_address}
+        openstack_control_node03:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:openstack_control_node03_deploy_address}
+        openstack_database_node01:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:openstack_database_node01_deploy_address}
+          classes:
+          - cluster.${_param:cluster_name}.openstack.database.master
+        openstack_database_node02:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:openstack_database_node02_deploy_address}
+          classes:
+          - cluster.${_param:cluster_name}.openstack.database.slave
+        openstack_database_node03:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:openstack_database_node03_deploy_address}
+          classes:
+          - cluster.${_param:cluster_name}.openstack.database.slave
+        openstack_message_queue_node01:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:openstack_message_queue_node01_deploy_address}
+        openstack_message_queue_node02:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:openstack_message_queue_node02_deploy_address}
+        openstack_message_queue_node03:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:openstack_message_queue_node03_deploy_address}
+        openstack_proxy_node01:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:openstack_proxy_node01_deploy_address}
+        openstack_proxy_node02:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:openstack_proxy_node02_deploy_address}
+        openstack_baremetal_node01:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:openstack_baremetal_node01_deploy_address}
+        openstack_baremetal_node02:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:openstack_baremetal_node02_deploy_address}
+        openstack_baremetal_node03:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:openstack_baremetal_node03_deploy_address}
+        openstack_telemetry_node01:
+          params:
+            linux_system_codename: xenial
+            ceilometer_create_gnocchi_resources: true
+            redis_cluster_role: 'master'
+            deploy_address: ${_param:openstack_telemetry_node01_deploy_address}
+        openstack_telemetry_node02:
+          params:
+            linux_system_codename: xenial
+            redis_cluster_role: 'slave'
+            deploy_address: ${_param:openstack_telemetry_node02_deploy_address}
+        openstack_telemetry_node03:
+          params:
+            linux_system_codename: xenial
+            redis_cluster_role: 'slave'
+            deploy_address: ${_param:openstack_telemetry_node03_deploy_address}
+        openstack_dns_node01:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:openstack_dns_node01_deploy_address}
+        openstack_dns_node02:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:openstack_dns_node02_deploy_address}
+        openstack_gateway_node01:
+          params:
+            deploy_address: ${_param:openstack_gateway_node01_deploy_address}
+        openstack_gateway_node02:
+          params:
+            deploy_address: ${_param:openstack_gateway_node02_deploy_address}
+        openstack_gateway_node03:
+          params:
+            deploy_address: ${_param:openstack_gateway_node03_deploy_address}
+        openstack_benchmark_node01:
+          params:
+            deploy_address: ${_param:openstack_benchmark_node01_deploy_address}
+        ceph_mon_node01:
+          params:
+            deploy_address: ${_param:ceph_mon_node01_deploy_address}
+            ceph_public_address: ${_param:ceph_mon_node01_ceph_public_address}
+            ceph_backup_time_hour: ${_param:ceph_mon_node01_ceph_backup_hour}
+            ceph_backup_time_minute: ${_param:ceph_mon_node01_ceph_backup_minute}
+        ceph_mon_node02:
+          params:
+            deploy_address: ${_param:ceph_mon_node02_deploy_address}
+            ceph_public_address: ${_param:ceph_mon_node02_ceph_public_address}
+            ceph_backup_time_hour: ${_param:ceph_mon_node02_ceph_backup_hour}
+            ceph_backup_time_minute: ${_param:ceph_mon_node02_ceph_backup_minute}
+        ceph_mon_node03:
+          params:
+            deploy_address: ${_param:ceph_mon_node03_deploy_address}
+            ceph_public_address: ${_param:ceph_mon_node03_ceph_public_address}
+            ceph_backup_time_hour: ${_param:ceph_mon_node03_ceph_backup_hour}
+            ceph_backup_time_minute: ${_param:ceph_mon_node03_ceph_backup_minute}
+        ceph_rgw_node01:
+          params:
+            deploy_address: ${_param:ceph_rgw_node01_deploy_address}
+            ceph_public_address: ${_param:ceph_rgw_node01_ceph_public_address}
+        ceph_rgw_node02:
+          params:
+            deploy_address: ${_param:ceph_rgw_node02_deploy_address}
+            ceph_public_address: ${_param:ceph_rgw_node02_ceph_public_address}
+        ceph_rgw_node03:
+          params:
+            deploy_address: ${_param:ceph_rgw_node03_deploy_address}
+            ceph_public_address: ${_param:ceph_rgw_node03_ceph_public_address}
+        cicd_control_node01:
+          params:
+            deploy_address: ${_param:cicd_control_node01_deploy_address}
+        cicd_control_node02:
+          params:
+            deploy_address: ${_param:cicd_control_node02_deploy_address}
+        cicd_control_node03:
+          params:
+            deploy_address: ${_param:cicd_control_node03_deploy_address}
+        openstack_compute_rack01:
+          name: ${_param:openstack_compute_rack01_hostname}<<count>>
+          domain: ${_param:cluster_domain}
+          classes:
+          - cluster.${_param:cluster_name}.openstack.compute
+          repeat:
+            count: 3
+            ip_ranges:
+              single_address: 10.11.1.1-10.11.10.255
+              deploy_address: 10.10.1.1-10.10.10.255
+              tenant_address: 10.12.1.1-10.12.10.255
+              backend_address: 10.13.1.1-10.13.10.255
+              ceph_public_address: 10.14.1.1-10.14.10.255
+            start: 1
+            digits: 3
+            params:
+              single_address:
+                value: <<single_address>>
+              deploy_address:
+                value: <<deploy_address>>
+              tenant_address:
+                value: <<tenant_address>>
+              backend_address:
+                value: <<backend_address>>
+              ceph_public_address:
+                value: <<ceph_public_address>>
+          params:
+            salt_master_host: ${_param:reclass_config_master}
+            ceph_crush_parent: rack01
+            linux_system_codename: xenial
+

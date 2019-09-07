@@ -1,0 +1,9 @@
+classes:
+- system.cassandra.backup.client.single
+- cluster.openstack-sh.infra.backup.allow_root_ssh
+parameters:
+  cassandra:
+    backup:
+      client:
+        target:
+          backup_dir: /srv/volumes/backup/cassandra

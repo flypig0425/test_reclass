@@ -1,0 +1,16 @@
+parameters:
+  linux:
+    system:
+      user:
+        bkupidura:
+          email: disabled
+          enabled: false
+          full_name: disabled
+          home: /home/bkupidura
+          name: bkupidura
+  openssh:
+    server:
+      user:
+        bkupidura:
+          enabled: false
+          user: ${linux:system:user:bkupidura}

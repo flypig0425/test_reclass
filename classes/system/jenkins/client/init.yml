@@ -1,0 +1,47 @@
+classes:
+- service.jenkins.support
+- service.jenkins.client
+- system.jenkins.client.approved_scripts
+- system.jenkins.client.plugins
+- system.jenkins.client.security.csrf
+parameters:
+  _param:
+    jenkins_client_user: none
+    jenkins_master_host: ${_param:control_vip_address}
+    jenkins_aptly_storages: "local"
+    jenkins_master_url_prefix: ""
+    jenkins_gerrit_credentials: "gerrit"
+  jenkins:
+    client:
+      master:
+        host: ${_param:jenkins_master_host}
+        port: ${_param:jenkins_master_port}
+        proto: https
+        url_prefix: ${_param:jenkins_master_url_prefix}
+        username: ${_param:jenkins_client_user}
+        password: ${_param:jenkins_client_password}
+      lib:
+        pipeline-library:
+          enabled: true
+          url: ${_param:jenkins_gerrit_url}/mcp-ci/pipeline-library
+          credential_id: ${_param:jenkins_gerrit_credentials}
+          branch: ${_param:jenkins_pipelines_branch}
+      theme:
+        css_url: '/userContent/theme/mirantis.css'
+        js_url: '/userContent/theme/mirantis.js'
+      view:
+        Mirrors:
+          enabled: true
+          type: CategorizedJobsView
+          include_regex: "git-mirror-.*"
+          categories:
+            - group_regex: "git-mirror-2way-.*"
+              naming_rule: "2way"
+            - group_regex: "git-mirror-(?!upstream-|2way-).*"
+              naming_rule: "Downstream"
+            - group_regex: "git-mirror-upstream-.*"
+              naming_rule: "Upstream"
+        Tests:
+          enabled: true
+          type: ListView
+          include_regex: "test-.*"

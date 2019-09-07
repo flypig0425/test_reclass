@@ -1,0 +1,43 @@
+classes:
+- system.apache.server.single
+- system.manila.control.cluster
+- system.keepalived.cluster.instance.openstack_manila_vip
+- system.salt.minion.cert.openstack_api
+- cluster.openstack-sh.infra
+- cluster.openstack-sh.openstack.networking.virtual
+parameters:
+  _param:
+    manila_cluster_vip_address: ${_param:openstack_control_address}
+    cluster_vip_address: ${_param:openstack_share_address}
+    cluster_local_address: ${_param:single_address}
+    cluster_node01_hostname: ${_param:openstack_share_node01_hostname}
+    cluster_node01_address: ${_param:openstack_share_node01_address}
+    cluster_node02_hostname: ${_param:openstack_share_node02_hostname}
+    cluster_node02_address: ${_param:openstack_share_node02_address}
+    cluster_node03_hostname: ${_param:openstack_share_node03_hostname}
+    cluster_node03_address: ${_param:openstack_share_node03_address}
+    keepalived_vip_interface: ens3
+    keepalived_vip_address: ${_param:cluster_vip_address}
+    keepalived_vip_password: ${_param:manila_keepalived_vip_password_generated}
+    apache_manila_api_address: ${_param:cluster_local_address}
+    haproxy_https_check_options:
+    - httpchk GET /
+    - httpclose
+    - tcplog
+    haproxy_manila_api_check_params: check inter 10s fastinter 2s downinter 3s rise 3 fall 3 check-ssl verify none
+    apache_ssl:
+      enabled: true
+      authority: "${_param:salt_minion_ca_authority}"
+      key_file: ${_param:openstack_api_cert_key_file}
+      cert_file: ${_param:openstack_api_cert_cert_file}
+      chain_file: ${_param:openstack_api_cert_all_file}
+    openstack_api_cert_alternative_names: IP:127.0.0.1,IP:${_param:cluster_local_address},IP:${_param:cluster_vip_address},DNS:${linux:system:name},DNS:${linux:network:fqdn},DNS:${_param:cluster_vip_address},DNS:${_param:openstack_share_service_host}
+  manila:
+    common:
+      default_share_type: default
+  haproxy:
+    proxy:
+      listen:
+        manila_api:
+          type: None
+          options: ${_param:haproxy_https_check_options}

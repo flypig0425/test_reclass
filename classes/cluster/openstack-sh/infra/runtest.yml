@@ -1,0 +1,14 @@
+
+classes:
+- service.runtest.tempest
+- system.keystone.client.os_client_config.admin_identity
+parameters:
+  _param:
+    tempest_test_target: ${_param:cicd_control_node01_hostname}.${_param:cluster_domain}
+  glance:
+    client:
+      cloud_name: "admin_identity"
+  runtest:
+    tempest:
+      DEFAULT:
+        log_file: /root/tempest/tempest.log

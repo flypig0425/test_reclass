@@ -1,0 +1,541 @@
+parameters:
+  jenkins:
+    client:
+      view:
+        Validation:
+          enabled: true
+          type: ListView
+          include_regex: "validate.*"
+        CVP:
+          enabled: true
+          type: ListView
+          include_regex: "cvp.*"
+      job:
+        validate_openstack:
+          type: workflow-scm
+          name: validate-openstack
+          display_name: "Validate - Openstack"
+          discard:
+            build:
+              keep_num: 50
+            artifact:
+              keep_num: 50
+          concurrent: true
+          scm:
+            type: git
+            url: "${_param:jenkins_gerrit_url}/mk/mk-pipelines"
+            branch: "${_param:jenkins_pipelines_branch}"
+            credentials: ${_param:jenkins_gerrit_credentials}
+            script: validate-cloud.groovy
+          param:
+            JOB_TIMEOUT:
+              type: string
+              default: "3"
+              description: Job timeout in hours
+            TEST_IMAGE:
+              type: string
+              default: "xrally/xrally-openstack:1.4.0"
+              description: Rally docker image to use for running tests
+            SALT_MASTER_URL:
+              type: string
+              default: "${_param:jenkins_salt_api_url}"
+              description: Full Salt API address [e.g. https://10.10.10.2:6969]
+            SALT_MASTER_CREDENTIALS:
+              type: string
+              default: "salt"
+              description: Credentials to the Salt API
+            VALIDATE_PARAMS:
+              type: text
+              description: YAML of parameters for Rally test
+              default: |
+                ---
+                  rally:
+                  # Name of availability zone
+                    AVAILABILITY_ZONE: 'nova'
+                  # External(floating) network name
+                    FLOATING_NETWORK: 'public'
+                  # Rally base image for glance
+                    RALLY_IMAGE: 'cirros'
+                  # Flavor name for Rally scenarios
+                    RALLY_FLAVOR: 'm1.tiny'
+                  # Git repository with configuration files for Rally
+                    RALLY_CONFIG_REPO: 'https://review.gerrithub.io/Mirantis/scale-scenarios'
+                  # Git branch which will be used during the checkout
+                    RALLY_CONFIG_BRANCH: 'master'
+                  # Git repository with Rally plugins
+                    RALLY_PLUGINS_REPO: 'https://github.com/Mirantis/rally-plugins'
+                  # Git branch which will be used during the checkout
+                    RALLY_PLUGINS_BRANCH: 'master'
+                  # Rally scenarios directory or file with scenarios
+                    RALLY_SCENARIOS: 'rally-scenarios-light'
+                  # Stacklight Rally scenarios directory or file with scenarios
+                    RALLY_SL_SCENARIOS: 'rally-stacklight'
+                  # Rally scenarios arguments file
+                    RALLY_TASK_ARGS_FILE: 'job-params-light.yaml'
+                  # Rally-compliant DB connection string for long-term results storing
+                    RALLY_DB_CONN_STRING: ''
+                  # List of tags for marking Rally tasks. Used as filter for Rally trends
+                    RALLY_TAGS:
+                    # - 'platform=openstack'
+                    # - 'env=your_env_name'
+                    # - 'cmp=2'
+                  # Generate rally trends report. Requires an external DB
+                    RALLY_TRENDS: 'false'
+                  # If chosen K8S Rally plugin will be used to test K8S cluster
+                    K8S_RALLY: 'false'
+                  # If chosen then Stacklight Rally test will be executed
+                    STACKLIGHT_RALLY: 'false'
+                  # Scenarios names/dirs to skip
+                    SKIP_LIST: ''
+                  # Run in parallel for each directory inside RALLY_SCENARIOS and RALLY_SL_SCENARIOS
+                    PARALLEL_PERFORMANCE: 'false'
+                  # If you are running longevity scenarios with parallel performance enabled on a cicd node
+                  # with less than 21GB, you may consider disabling generation of html reports. Each Rally
+                  # process consumes ~ 4GB of memory when generating reports on top of week amount of data
+                    GENERATE_REPORT: 'true'
+        cvp-sanity:
+          type: workflow-scm
+          name: cvp-sanity
+          display_name: "CVP - Sanity checks"
+          discard:
+            build:
+              keep_num: 20
+            artifact:
+              keep_num: 20
+          concurrent: false
+          scm:
+            type: git
+            url: "${_param:jenkins_gerrit_url}/mk/mk-pipelines"
+            branch: "${_param:jenkins_pipelines_branch}"
+            credentials: ${_param:jenkins_gerrit_credentials}
+            script: cvp-runner.groovy
+          param:
+            IMAGE:
+              type: string
+              default: "${_param:docker_image_cvp_sanity_checks}"
+              description: Docker image with tests and all pip dependecies to use for testing
+            SALT_MASTER_URL:
+              type: string
+              default: "${_param:jenkins_salt_api_url}"
+              description: Full Salt API address [e.g. https://10.10.10.2:8969]
+            SALT_MASTER_CREDENTIALS:
+              type: string
+              default: "salt"
+            EXTRA_PARAMS:
+              type: text
+              default: |
+                envs:
+                  - tests_set=''
+              description: "YAML context with additional parameters, e.g. skipped_nodes=nal01.local.com,ntw01.local.com or tests_set='tests/test_mtu.py'"
+        cvp-func:
+          type: workflow-scm
+          name: cvp-func
+          display_name: "CVP - Functional tests"
+          discard:
+            build:
+              keep_num: 20
+            artifact:
+              keep_num: 20
+          concurrent: false
+          scm:
+            type: git
+            url: "${_param:jenkins_gerrit_url}/mk/mk-pipelines"
+            branch: "${_param:jenkins_pipelines_branch}"
+            credentials: ${_param:jenkins_gerrit_credentials}
+            script: cvp-func.groovy
+          param:
+            DEBUG_MODE:
+              type: boolean
+              default: 'false'
+              description: Enable if you need to keep container after the test and debug
+            SKIP_LIST_PATH:
+              type: string
+              default: "cvp-configuration/tempest/skip-list.yaml"
+              description: Path to skip list in container
+            SALT_MASTER_URL:
+              type: string
+              default: "http://${_param:salt_master_host}:${_param:salt_master_api_port}"
+              description: Full Salt API address [e.g. http://10.10.10.2:6969]
+            SALT_MASTER_CREDENTIALS:
+              type: string
+              default: "salt"
+              description: Credentials to the Salt API
+            TEST_IMAGE:
+              type: string
+              default: "${_param:docker_image_cvp_xrally}"
+              description: Docker image to use for running Rally/Tempest
+            TARGET_NODE:
+              type: string
+              default: ""
+              description: Node where container with Tempest will be run
+            PROXY:
+              type: string
+              default: ""
+              description: "Proxy address to use to access the Internet. For offline mode, use \"offline\" value."
+            TEMPEST_TEST_PATTERN:
+              type: string
+              default: "set=smoke"
+              description: Use set=smoke (or identity,full...) or just test name
+            TEMPEST_ENDPOINT_TYPE:
+              type: choice
+              choices:
+                - internalURL
+                - adminURL
+                - publicURL
+              description: Openstack endpoint type to use during test run
+            TEMPEST_REPO:
+              type: string
+              default: "https://github.com/openstack/tempest"
+              description: URL to Tempest repo (local or remote) or path to tempest folder in container
+            TOOLS_REPO:
+              type: string
+              default: "https://github.com/Mirantis/cvp-configuration"
+              description: URL of repo where testing tools, scenarios, configs are located.
+        cvp-ha:
+          type: workflow-scm
+          name: cvp-ha
+          display_name: "CVP - HA tests"
+          discard:
+            build:
+              keep_num: 20
+            artifact:
+              keep_num: 20
+          concurrent: false
+          scm:
+            type: git
+            url: "${_param:jenkins_gerrit_url}/mk/mk-pipelines"
+            branch: "${_param:jenkins_pipelines_branch}"
+            credentials: ${_param:jenkins_gerrit_credentials}
+            script: cvp-ha.groovy
+          param:
+            SALT_MASTER_URL:
+              type: string
+              default: "http://${_param:salt_master_host}:${_param:salt_master_api_port}"
+              description: Full Salt API address [e.g. http://10.10.10.2:6969]
+            SALT_MASTER_CREDENTIALS:
+              type: string
+              default: "salt"
+              description: Credentials to the Salt API
+            TEMPEST_TARGET_NODE:
+              type: string
+              default: ""
+              description: Node where container with tempest will be run
+            TEST_IMAGE:
+              type: string
+              default: "${_param:docker_image_cvp_xrally}"
+              description: Docker image to use for running Rally/Tempest
+            TARGET_NODES:
+              type: string
+              default: "ctl*"
+              description: Nodes to test
+            DEBUG_MODE:
+              type: boolean
+              default: 'false'
+              description: If you need to debug (keep container after test), please enabled this
+            RETRY_CHECK_STATUS:
+              type: string
+              default: "200"
+              description: If you have any problems with timeouts (e.g. while waiting for node to be up/down), please increase this value
+            SKIP_LIST_PATH:
+              type: string
+              default: "cvp-configuration/tempest/skip-list.yaml"
+              description: path to skip-list file inside container
+            PROXY:
+              type: string
+              default: ""
+              description: "Proxy address to use to access the Internet. For offline mode, use \"offline\" value."
+            TEMPEST_TEST_PATTERN:
+              type: string
+              default: "set=smoke"
+              description: Use set=smoke (or identity,full...) or just test name
+            MANUAL_CONFIRMATION:
+              type: boolean
+              default: 'false'
+              description: Ask for confirmation before doing something destructive (reboot/shutdown node)
+            TEMPEST_REPO:
+              type: string
+              default: "https://github.com/openstack/tempest"
+              description: Can be repo url (local or remote) or path to folder (inside container) with Tempest
+            TOOLS_REPO:
+              type: string
+              default: "https://github.com/Mirantis/cvp-configuration"
+              description: URL of repo where testing tools, scenarios, configs are located.
+        cvp-tempest:
+          type: workflow-scm
+          name: cvp-tempest
+          display_name: "CVP - Tempest (new)"
+          discard:
+            build:
+              keep_num: 20
+            artifact:
+              keep_num: 20
+          concurrent: false
+          scm:
+            type: git
+            url: "${_param:jenkins_gerrit_url}/mk/mk-pipelines"
+            branch: "${_param:jenkins_pipelines_branch}"
+            credentials: ${_param:jenkins_gerrit_credentials}
+            script: cvp-tempest.groovy
+          param:
+            PREPARE_RESOURCES:
+              type: boolean
+              default: true
+              description: Prepare resources for Tempest
+            SALT_MASTER_URL:
+              type: string
+              default: "http://${_param:salt_master_host}:${_param:salt_master_api_port}"
+              description: Full Salt API address [e.g. http://10.10.10.2:6969]
+            TEMPEST_TEST_PATTERN:
+              type: string
+              default: "set=smoke"
+              description: Use set=smoke, set=full or just test name (regex)
+            TEMPEST_ENDPOINT_TYPE:
+              type: choice
+              choices:
+                - internalURL
+                - adminURL
+                - publicURL
+              description: Openstack endpoint type to use during test run.
+            EXTRA_PARAMS:
+              type: text
+              default:  |
+                ---
+                  DEBUG_MODE: false
+                  GENERATE_CONFIG: true
+                  TEST_IMAGE: "${_param:docker_image_cvp_tempest}"
+                  report_prefix: "cvp_"
+              description: YAML context with additional parameters
+        cvp-perf:
+          type: workflow-scm
+          name: cvp-perf
+          display_name: "CVP - Performance tests"
+          discard:
+            build:
+              keep_num: 20
+            artifact:
+              keep_num: 20
+          concurrent: false
+          scm:
+            type: git
+            url: "${_param:jenkins_gerrit_url}/mk/mk-pipelines"
+            branch: "${_param:jenkins_pipelines_branch}"
+            credentials: ${_param:jenkins_gerrit_credentials}
+            script: cvp-perf.groovy
+          param:
+            DEBUG_MODE:
+              type: boolean
+              default: 'false'
+              description: Enable if you need to keep container after the test and debug
+            RALLY_SCENARIO_FILE:
+              type: string
+              default: "cvp-configuration/rally/rally_scenarios.json"
+              description: Path to scenario file in container
+            TEST_IMAGE:
+              type: string
+              default: "${_param:docker_image_cvp_xrally}"
+              description: Docker image to use for running Rally/Tempest
+            SALT_MASTER_URL:
+              type: string
+              default: "http://${_param:salt_master_host}:${_param:salt_master_api_port}"
+              description: Full Salt API address [e.g. http://10.10.10.2:6969]
+            SALT_MASTER_CREDENTIALS:
+              type: string
+              default: "salt"
+              description: Credentials to the Salt API
+            TARGET_NODE:
+              type: string
+              default: ""
+              description: Node where docker container with Rally will be run
+            TOOLS_REPO:
+              type: string
+              default: "https://github.com/Mirantis/cvp-configuration"
+              description: URL of repo where testing tools, scenarios, configs are located.
+            PROXY:
+              type: string
+              default: ""
+              description: "Proxy address to use to access the Internet. For offline mode, use \"offline\" value."
+        cvp-stacklight:
+          type: workflow-scm
+          name: cvp-stacklight
+          display_name: "CVP - Stacklight tests"
+          discard:
+            build:
+              keep_num: 20
+            artifact:
+              keep_num: 20
+          concurrent: false
+          scm:
+            type: git
+            url: "${_param:jenkins_gerrit_url}/mk/mk-pipelines"
+            branch: "${_param:jenkins_pipelines_branch}"
+            credentials: ${_param:jenkins_gerrit_credentials}
+            script: cvp-runner.groovy
+          param:
+            IMAGE:
+              type: string
+              default: "${_param:docker_image_cvp_sanity_checks}"
+              description: Docker image with tests and all pip dependecies to use for testing
+            SALT_MASTER_URL:
+              type: string
+              default: "${_param:jenkins_salt_api_url}"
+              description: Full Salt API address [e.g. https://10.10.10.2:8969]
+            SALT_MASTER_CREDENTIALS:
+              type: string
+              default: "salt"
+            EXTRA_PARAMS:
+              type: text
+              default: |
+                envs:
+                  - SL_AUTOCONF=True
+              description: YAML context with additional parameters
+        cvp-spt:
+          type: workflow-scm
+          name: cvp-spt
+          display_name: "CVP - Simplified Performance Tests (SPT)"
+          discard:
+            build:
+              keep_num: 20
+            artifact:
+              keep_num: 20
+          concurrent: false
+          scm:
+            type: git
+            url: "${_param:jenkins_gerrit_url}/mk/mk-pipelines"
+            branch: "${_param:jenkins_pipelines_branch}"
+            credentials: ${_param:jenkins_gerrit_credentials}
+            script: cvp-runner.groovy
+          param:
+            IMAGE:
+              type: string
+              default: "${_param:docker_image_cvp_sanity_checks}"
+              description: Docker image with tests and all pip dependecies to use for testing
+            SALT_MASTER_URL:
+              type: string
+              default: "${_param:jenkins_salt_api_url}"
+              description: Full Salt API address [e.g. https://10.10.10.2:8969]
+            SALT_MASTER_CREDENTIALS:
+              type: string
+              default: "salt"
+            EXTRA_PARAMS:
+              type: text
+              default: |
+                envs:
+                  - tests_set=''
+                  - image_name=Ubuntu
+                  - networks=10.101.0.0/24
+              description: 'YAML context with additional parameters. Additional params: HW_NODES, CMP_HOSTS, salt_timeout, skipped_nodes, nova_timeout, iperf_prep_string, IMAGE_SIZE_MB'
+        cvp-shaker:
+          type: workflow-scm
+          name: cvp-shaker
+          display_name: "CVP - Shaker network tests"
+          discard:
+            build:
+              keep_num: 20
+            artifact:
+              keep_num: 20
+          concurrent: false
+          scm:
+            type: git
+            url: "${_param:jenkins_gerrit_url}/mk/mk-pipelines"
+            branch: "${_param:jenkins_pipelines_branch}"
+            credentials: ${_param:jenkins_gerrit_credentials}
+            script: cvp-shaker.groovy
+          param:
+            IMAGE:
+              type: string
+              default: "${_param:docker_image_cvp_shaker_checks}"
+              description: Docker image to use for running Shaker.
+            SALT_MASTER_URL:
+              type: string
+              default: "${_param:jenkins_salt_api_url}"
+              description: Full Salt API address [e.g. https://10.10.10.2:6969].
+            SALT_MASTER_CREDENTIALS:
+              type: string
+              default: "salt"
+              description: Credentials to the Salt API.
+            SHAKER_PARAMS:
+              type: text
+              default:  |
+                ---
+                  SHAKER_SERVER_ENDPOINT: '10.13.0.15:5999'
+                  SHAKER_SCENARIOS: 'scenarios/essential'
+                  SKIP_LIST: ''
+                  MATRIX: ''
+                  image_builder:
+                  #  - SHAKER_FLAVOR_DISK=4
+                  #  - SHAKER_FLAVOR_RAM=512
+                  #  - SHAKER_FLAVOR_VCPUS=1
+                  #  - SHAKER_IMAGE_BUILDER_MODE='dib'
+                  shaker:
+                  #  - SHAKER_AGENT_JOIN_TIMEOUT=300
+                  #  - SHAKER_AGENT_LOSS_TIMEOUT=120
+                  #  - SCENARIO_AVAILABILITY_ZONE='nova,internal'
+                  #  - SCENARIO_COMPUTE_NODES=2
+                  #  - SHAKER_EXTERNAL_NET='public'
+              description: |
+                  YAML context with parameters for running Shaker tests, where
+                  "SHAKER_SERVER_ENDPOINT" - Address for Shaker server connections (host:port). Should be accessible
+                  from tenant's VM network (usually equals to public address of cicd node)
+                  "SHAKER_SCENARIOS" - Path to shaker scenarios in the cvp-shaker docker image
+                  (can be directory or specific file). Main categories are
+                    scenarios/essential/l2
+                    scenarios/essential/l3
+                    scenarios/additional/cross_az
+                    scenarios/additional/external
+                    scenarios/additional/qos
+                  "MATRIX" - Set the matrix of extra parameters for the scenario. The value is specified in JSON format.
+                  To override a scenario duration one may provide "{time: 10}", or to override list of hosts:
+                  "{host:[ping.online.net, iperf.eenet.ee]}". When several parameters are overridden all combinations are
+                  tested. It is a required field for some of external-category scenarios when the host name with iperf3
+                  server needs to be provided as a command-line parameter, e.g. "{host: 10.13.100.4}".
+                  "SKIP_LIST" - Comma-separated list of Shaker scenarios to skip, directories or files inside scenarios/
+                  of cvp-shaker, e.g. "dense_l2.yaml,full_l2.yaml,l3"
+                  "image_builder" - shaker-image-builder env variables
+                    SHAKER_FLAVOR_DISK=4
+                    SHAKER_FLAVOR_RAM=512
+                    SHAKER_FLAVOR_VCPUS=1
+                    SHAKER_IMAGE_BUILDER_MODE='dib'
+                  "shaker" - main shaker runner env variables
+                    SHAKER_AGENT_JOIN_TIMEOUT=300
+                    SHAKER_AGENT_LOSS_TIMEOUT=120
+                    SCENARIO_AVAILABILITY_ZONE='nova,internal'
+                    SCENARIO_COMPUTE_NODES=2
+                    SHAKER_EXTERNAL_NET='public'
+                  For the more detailed description of the last two categories please refer to the shaker documentation
+                  https://pyshaker.readthedocs.io/en/latest/tools.html
+        cvp-rebuild:
+          type: workflow-scm
+          name: cvp-rebuild
+          display_name: "CVP-rebuild job for images"
+          discard:
+            build:
+              keep_num: 20
+            artifact:
+              keep_num: 20
+          concurrent: false
+          scm:
+            type: git
+            url: "${_param:jenkins_gerrit_url}/mk/mk-pipelines"
+            branch: "${_param:jenkins_pipelines_branch}"
+            credentials: ${_param:jenkins_gerrit_credentials}
+            script: cvp-rebuild.groovy
+          param:
+            DESTINATION_IMAGE:
+              type: string
+              default: ""
+              description: "Specify address of local registry and name of the image e.g. _cid_vip_:5000/ci-tempest:v1"
+            SALT_MASTER_URL:
+              type: string
+              default: "${_param:jenkins_salt_api_url}"
+              description: Full Salt API address [e.g. https://10.10.10.2:6969]
+            SALT_MASTER_CREDENTIALS:
+              type: string
+              default: "salt"
+            REPO:
+              type: string
+              default: ""
+              description: Specify repo that will be used to rebuild image
+            BRANCH:
+              type: string
+              default: ""
+              description: Branch or version of REPO to checkout

@@ -1,0 +1,22 @@
+classes:
+- system.ceph.osd.cluster
+- cluster.openstack-sh.infra.backup.client_ceph
+- cluster.openstack-sh.ceph.common
+- cluster.openstack-sh.ceph.networking.osd
+parameters:
+  _param:
+    ceph_osd_primary_first_nic: ens3
+    ceph_osd_primary_second_nic: ens4
+  ceph:
+    osd:
+      enabled: true
+      crush_parent: ${_param:ceph_crush_parent}
+      bluestore_block_db_size: 5368709120
+      backend:
+        bluestore:
+          disks:
+            - dev: /dev/loop20
+              block_db: /dev/loop21
+              data_partition_prefix: p
+#              class: hdd
+#              weight: 1.5

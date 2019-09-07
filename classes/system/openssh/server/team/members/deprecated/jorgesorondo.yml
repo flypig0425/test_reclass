@@ -1,0 +1,16 @@
+parameters:
+  linux:
+    system:
+      user:
+        jsorondo:
+          email: disabled
+          enabled: false
+          full_name: disabled
+          home: /home/jsorondo
+          name: jsorondo
+  openssh:
+    server:
+      user:
+        jsorondo:
+          enabled: false
+          user: ${linux:system:user:jsorondo}

@@ -1,0 +1,16 @@
+parameters:
+  linux:
+    system:
+      user:
+        tux:
+          email: disabled
+          enabled: false
+          full_name: disabled
+          name: tux
+          home: /home/tux
+  openssh:
+    server:
+      user:
+        tux:
+          enabled: false
+          user: ${linux:system:user:tux}

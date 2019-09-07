@@ -1,0 +1,16 @@
+parameters:
+  linux:
+    system:
+      user:
+        ahecko:
+          email: disabled
+          enabled: false
+          full_name: disabled
+          home: /home/ahecko
+          name: ahecko
+  openssh:
+    server:
+      user:
+        ahecko:
+          enabled: false
+          user: ${linux:system:user:ahecko}

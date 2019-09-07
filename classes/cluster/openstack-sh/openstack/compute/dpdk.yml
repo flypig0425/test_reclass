@@ -1,0 +1,3 @@
+classes:
+- system.neutron.compute.nfv.dpdk
+- cluster.openstack-sh.openstack.compute

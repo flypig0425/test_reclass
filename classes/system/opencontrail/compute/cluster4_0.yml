@@ -1,0 +1,36 @@
+applications:
+- opencontrail
+classes:
+  - service.opencontrail.compute.cluster
+parameters:
+  _param:
+    opencontrail_version: 4.1
+    opencontrail_compute_iface_mask: 24
+  opencontrail:
+    common:
+      version: ${_param:opencontrail_version}
+      identity:
+        engine: keystone
+        host: ${_param:openstack_control_address}
+        port: ${_param:opencontrail_identity_port}
+        token: ${_param:keystone_service_token}
+        password: ${_param:opencontrail_admin_password}
+      network:
+        host: ${_param:openstack_control_address}
+    compute:
+      disable_flow_collection: True
+      config:
+        members:
+        - host: ${_param:opencontrail_control_node01_address}
+        - host: ${_param:opencontrail_control_node02_address}
+        - host: ${_param:opencontrail_control_node03_address}
+      collector:
+        members:
+        - host: ${_param:opencontrail_analytics_node01_address}
+        - host: ${_param:opencontrail_analytics_node02_address}
+        - host: ${_param:opencontrail_analytics_node03_address}
+      control:
+        members:
+        - host: ${_param:opencontrail_control_node01_address}
+        - host: ${_param:opencontrail_control_node02_address}
+        - host: ${_param:opencontrail_control_node03_address}

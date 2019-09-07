@@ -1,0 +1,13 @@
+classes:
+- service.ceph.mgr.cluster
+- system.ceph.mon.cluster
+- cluster.openstack-sh.infra.backup.client_ceph
+- cluster.openstack-sh.ceph.networking.virtual
+- cluster.openstack-sh.ceph.common
+parameters:
+  ceph:
+    backup:
+      client:
+        backup_times:
+          hour: ${_param:ceph_backup_time_hour}
+          minute: ${_param:ceph_backup_time_minute}

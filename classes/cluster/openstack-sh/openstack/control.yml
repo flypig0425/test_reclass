@@ -1,0 +1,204 @@
+classes:
+- system.linux.system.repo.mcp.apt_mirantis.glusterfs
+- system.memcached.server.single
+- system.neutron.control.openvswitch.cluster
+- system.neutron.control.openvswitch.octavia
+- system.keystone.server.cluster
+- system.keystone.server.wsgi
+- system.keystone.server.notification.messagingv2
+- system.glance.control.cluster
+- system.glance.control.notification.messagingv2
+- system.nova.control.cluster
+- system.nova.control.notification.messagingv2
+- system.neutron.control.notification.messagingv2
+- system.haproxy.proxy.listen.openstack.ironic
+- system.ironic.api.cluster
+- system.ceilometer.client.nova_control
+- system.cinder.control.cluster
+- system.cinder.control.notification.messagingv2
+- system.cinder.volume.single
+- system.cinder.volume.notification.messagingv2
+- system.heat.server.cluster
+- system.heat.server.notification.messagingv2
+- system.haproxy.proxy.listen.openstack.nova-placement
+- system.keepalived.cluster.instance.openstack_controller_vip
+- system.glusterfs.client.cluster
+- system.glance.control.storage.ceph
+- system.cinder.control.backend.ceph
+- system.ceph.common.cluster
+- system.cinder.control.backup.ceph
+- system.cinder.volume.backup.ceph
+- system.designate.server.cluster.pdns
+- system.octavia.api.cluster
+- system.octavia.client
+- system.salt.minion.cert.openstack_api
+- system.apache.server.proxy
+- system.apache.server.ssl
+- system.apache.server.site.cinder
+- system.apache.server.site.nova-placement
+- system.apache.server.proxy.openstack.designate
+- system.apache.server.proxy.openstack.glance
+- system.apache.server.proxy.openstack.heat
+- system.apache.server.proxy.openstack.neutron
+- system.apache.server.proxy.openstack.nova
+- system.apache.server.proxy.openstack.octavia
+- cluster.openstack-sh.ceph.common
+- cluster.openstack-sh.infra
+- cluster.openstack-sh.openstack.networking.virtual
+parameters:
+  _param:
+    keepalived_vip_interface: ens3
+    keepalived_vip_virtual_router_id: 50
+    keepalived_vrrp_script_check_multiple_processes: 'haproxy'
+    cluster_vip_address: ${_param:openstack_control_address}
+    cluster_local_address: ${_param:single_address}
+    cluster_node01_hostname: ${_param:openstack_control_node01_hostname}
+    cluster_node01_address: ${_param:openstack_control_node01_address}
+    cluster_node02_hostname: ${_param:openstack_control_node02_hostname}
+    cluster_node02_address: ${_param:openstack_control_node02_address}
+    cluster_node03_hostname: ${_param:openstack_control_node03_hostname}
+    cluster_node03_address: ${_param:openstack_control_node03_address}
+    nova_vncproxy_url: https://${_param:cluster_public_host}:6080
+    ironic_service_host: ${_param:cluster_vip_address}
+    cluster_baremetal_local_address: ${_param:cluster_local_address}
+    ironic_api_type: 'public'
+    apache_ssl:
+      enabled: true
+      authority: "${_param:salt_minion_ca_authority}"
+      key_file: ${_param:openstack_api_cert_key_file}
+      cert_file: ${_param:openstack_api_cert_cert_file}
+      chain_file: ${_param:openstack_api_cert_all_file}
+    # services that are running under eventlet will listen on localhost.
+    apache_proxy_openstack_api_address: ${_param:cluster_local_address}
+    apache_proxy_openstack_api_host: ${_param:cluster_local_address}
+    apache_nova_placement_api_address: ${_param:cluster_local_address}
+    apache_cinder_api_address: ${_param:cluster_local_address}
+    apache_proxy_openstack_keystone_host: 127.0.0.1
+    apache_proxy_openstack_nova_host: 127.0.0.1
+    apache_proxy_openstack_glance_host: 127.0.0.1
+    apache_proxy_openstack_neutron_host: 127.0.0.1
+    apache_proxy_openstack_heat_host: 127.0.0.1
+    apache_proxy_openstack_octavia_host: 127.0.0.1
+    haproxy_https_check_options:
+    - httpchk GET /
+    - httpclose
+    - tcplog
+    haproxy_keystone_public_api_check_params: check inter 10s fastinter 2s downinter 3s rise 3 fall 3 check-ssl verify none
+    haproxy_keystone_admin_api_check_params: check inter 10s fastinter 2s downinter 3s rise 3 fall 3 check-ssl verify none
+    haproxy_nova_api_check_params: check inter 10s fastinter 2s downinter 3s rise 3 fall 3 check-ssl verify none
+    haproxy_cinder_api_check_params: check inter 10s fastinter 2s downinter 3s rise 3 fall 3 check-ssl verify none
+    haproxy_glance_api_check_params: check inter 10s fastinter 2s downinter 3s rise 3 fall 3 check-ssl verify none
+    haproxy_glance_registry_api_check_params: check-ssl verify none
+    haproxy_heat_api_check_params: check inter 10s fastinter 2s downinter 3s rise 3 fall 3 check-ssl verify none
+    haproxy_heat_cfn_api_check_params: check inter 10s fastinter 2s downinter 3s rise 3 fall 3 check-ssl verify none
+    haproxy_neutron_check_params: check inter 10s fastinter 2s downinter 3s rise 3 fall 3 check-ssl verify none
+    haproxy_octavia_api_check_params: check inter 10s fastinter 2s downinter 3s rise 3 fall 3 check-ssl verify none
+    haproxy_nova_placement_api_check_params: check inter 10s fastinter 2s downinter 3s rise 3 fall 3 check-ssl verify none
+    haproxy_heat_cloudwatch_api_check_params: check inter 10s fastinter 2s downinter 3s rise 3 fall 3 check-ssl verify none
+    apache_proxy_openstack_designate_host: 127.0.0.1
+    haproxy_designate_check_params: check inter 10s fastinter 2s downinter 3s rise 3 fall 3 check-ssl verify none
+    apache_keystone_api_host: ${_param:single_address}
+  keystone:
+    server:
+      security_compliance:
+        password_regex: '^[a-zA-Z0-9~!@#%^&\*_=+]{32,}$'
+        password_regex_description: |
+          Your password could contains capital letters, lowercase letters, digits, symbols '~ ! @ # % ^ & * _ = +' and have a minimum length of 32 characters
+        change_password_upon_first_use: False
+        minimum_password_age: 0
+        password_expires_days: 730
+        unique_last_password_count: 5
+        lockout_duration: 600
+        lockout_failure_attempts: 60
+  neutron:
+    server:
+      enabled: true
+      bind:
+        address: 127.0.0.1
+  haproxy:
+    proxy:
+      listen:
+        designate_api:
+          type: None
+          options: ${_param:haproxy_https_check_options}
+        keystone_public_api:
+          type: None
+          options: ${_param:haproxy_https_check_options}
+        keystone_admin_api:
+          type: None
+          options: ${_param:haproxy_https_check_options}
+        nova_api:
+          type: None
+          options: ${_param:haproxy_https_check_options}
+        cinder_api:
+          type: None
+          options: ${_param:haproxy_https_check_options}
+        glance_api:
+          type: None
+          options: ${_param:haproxy_https_check_options}
+        glance_registry_api:
+          type: None
+          options: ${_param:haproxy_https_check_options}
+        heat_cloudwatch_api:
+          type: None
+          options: ${_param:haproxy_https_check_options}
+        heat_api:
+          type: None
+          options: ${_param:haproxy_https_check_options}
+        heat_cfn_api:
+          type: None
+          options: ${_param:haproxy_https_check_options}
+        neutron_api:
+          type: None
+          options: ${_param:haproxy_https_check_options}
+        nova_placement_api:
+          type: None
+          mode: tcp
+          options: ${_param:haproxy_https_check_options}
+        octavia_api:
+          type: None
+          options: ${_param:haproxy_https_check_options}
+  glance:
+    server:
+      enabled: true
+      bind:
+        address: 127.0.0.1
+      barbican:
+        enabled: ${_param:barbican_integration_enabled}
+      show_multiple_locations: True
+  nova:
+    controller:
+      enabled: true
+      bind:
+        private_address: 127.0.0.1
+      metadata:
+         bind:
+           address: ${_param:cluster_local_address}
+      barbican:
+        enabled: ${_param:barbican_integration_enabled}
+  cinder:
+    controller:
+      enabled: true
+      barbican:
+        enabled: ${_param:barbican_integration_enabled}
+  heat:
+    server:
+      bind:
+        api:
+          address: 127.0.0.1
+        api_cfn:
+          address: 127.0.0.1
+        api_cloudwatch:
+          address: 127.0.0.1
+  designate:
+    server:
+      api:
+        base_uri: https://${_param:cluster_public_host}:9001
+      bind:
+        api:
+          address: 127.0.0.1
+  octavia:
+    api:
+      bind:
+        address: 127.0.0.1
+

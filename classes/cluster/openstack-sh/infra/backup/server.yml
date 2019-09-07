@@ -1,0 +1,22 @@
+classes:
+- system.backupninja.server.single
+- system.xtrabackup.server.single
+- system.ceph.backup.server.single
+- system.glusterfs.client.cluster
+- system.glusterfs.client.volume.backup
+parameters:
+  _param:
+    backupninja_public_key: ${_param:backup_public_key}
+    xtrabackup_public_key: ${_param:backup_public_key}
+    zookeeper_backup_public_key: ${_param:backup_public_key}
+    cassandra_backup_public_key: ${_param:backup_public_key}
+    ceph_backup_public_key: ${_param:backup_public_key}
+  backupninja:
+    server:
+      home_dir: /srv/volumes/backup/backupninja
+  xtrabackup:
+    server:
+      backup_dir: /srv/volumes/backup/xtrabackup
+  ceph:
+    backup:
+      backup_dir: /srv/volumes/backup/ceph

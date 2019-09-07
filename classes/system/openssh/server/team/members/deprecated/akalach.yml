@@ -1,0 +1,16 @@
+parameters:
+  linux:
+    system:
+      user:
+        akalach:
+          email: disabled
+          enabled: false
+          full_name: disabled
+          home: /home/akalach
+          name: akalach
+  openssh:
+    server:
+      user:
+        akalach:
+          enabled: false
+          user: ${linux:system:user:akalach}

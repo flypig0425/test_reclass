@@ -1,0 +1,19 @@
+parameters:
+  linux:
+    system:
+      user:
+        mrasskazov:
+          enabled: true
+          name: mrasskazov
+          sudo: ${_param:linux_system_user_sudo}
+          full_name: Maxim Rasskazov
+          home: /home/mrasskazov
+          email: mrasskazov@mirantis.com
+  openssh:
+    server:
+      user:
+        mrasskazov:
+          enabled: true
+          public_keys:
+            - key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC4Bq2NQlTLLXUZapAx1R7glnJHchDV+zo/6GPSLKYjDJduTqcd+K9K5Q4n15Nvst97vI7AJRxVIhuLgByIPhCb4M73AGrj/9kD3NBy+fSEqL4/BSAz2HSnP88Z8gJS5PaePx0ze8aduPKIoBiX/qN90VaIG4yOthfdt7L6odpm+WhbcauOI87Tdp6WIQ29hDVrdj+4XzD5WJ36il5bxTia0mJohy8BZzIkuwpbOX5UV6+E8cuPRwFmFVdezOUsCLF6uvcMHwMVgyZ243oZdH+33E0FQ60pzcMgc/drhlQg7SsYxosqOoX8BXn7uLo3YMftRNJrp6cEK3vo8dgnEx59 mrasskazov@mirantis.com
+          user: ${linux:system:user:mrasskazov}

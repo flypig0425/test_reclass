@@ -1,0 +1,94 @@
+classes:
+- service.nova.compute.kvm
+- system.nova.upgrade
+- system.salt.minion.cert.rabbitmq.clients.openstack.nova
+parameters:
+  _param:
+    nova_vncproxy_url: https://${_param:cluster_public_host}:6080
+    nova_compute_virtualization: kvm
+    nova_compute_avail_zone:
+    nova_aggregates: []
+  openssh:
+    client:
+      enabled: True
+      user: {}
+      stricthostkeychecking: False
+  nova:
+    compute:
+      version: ${_param:nova_version}
+      enabled: true
+      virtualization: ${_param:nova_compute_virtualization}
+      availability_zone: ${_param:nova_compute_avail_zone}
+      aggregates: ${_param:nova_aggregates}
+      heal_instance_info_cache_interval: 60
+      vncproxy_url: ${_param:nova_vncproxy_url}
+      instance_build_timeout: ${_param:nova_instance_build_timeout}
+      bind:
+        vnc_address: ${_param:cluster_local_address}
+        vnc_port: 6080
+        vnc_name: 0.0.0.0
+      database:
+        engine: mysql
+        host: ${_param:openstack_database_address}
+        port: 3306
+        name: nova
+        user: ${_param:mysql_nova_username}
+        password: ${_param:mysql_nova_password}
+      identity:
+        engine: keystone
+        region: ${_param:openstack_region}
+        host: ${_param:cluster_vip_address}
+        port: 35357
+        user: ${_param:keystone_nova_username}
+        password: ${_param:keystone_nova_password}
+        tenant: service
+        protocol: ${_param:cluster_internal_protocol}
+      service_user:
+        enabled: ${_param:nova_service_user_enabled}
+      barbican:
+        enabled: ${_param:barbican_integration_enabled}
+      message_queue:
+        engine: rabbitmq
+        port: ${_param:openstack_rabbitmq_port}
+        user: openstack
+        password: ${_param:rabbitmq_openstack_password}
+        virtual_host: '/openstack'
+        members:
+          - host: ${_param:openstack_message_queue_node01_address}
+          - host: ${_param:openstack_message_queue_node02_address}
+          - host: ${_param:openstack_message_queue_node03_address}
+        x509:
+          enabled: ${_param:openstack_rabbitmq_x509_enabled}
+          ca_file: ${_param:rabbitmq_nova_ssl_ca_file}
+          key_file: ${_param:rabbitmq_nova_client_ssl_key_file}
+          cert_file: ${_param:rabbitmq_nova_client_ssl_cert_file}
+        ssl:
+          enabled: ${_param:rabbitmq_ssl_enabled}
+      image:
+        engine: glance
+        host: ${_param:cluster_vip_address}
+        port: 9292
+        protocol: ${_param:cluster_internal_protocol}
+      network:
+        engine: neutron
+        region: ${_param:openstack_region}
+        host: ${_param:neutron_service_host}
+        port: 9696
+        user: ${_param:keystone_neutron_username}
+        tenant: service
+        password: ${_param:keystone_neutron_password}
+        protocol: ${_param:cluster_internal_protocol}
+      user:
+        public_key: ${_param:nova_compute_ssh_public}
+        private_key: ${_param:nova_compute_ssh_private}
+      # Due to bug in qemu, migration will not work when fqdn is higher than 64 chars.
+      # https://bugzilla.redhat.com/show_bug.cgi?id=1568939
+      # Set migration address explicitly to avoid such problems.
+      libvirt:
+        migration_inbound_addr: ${_param:single_address}
+      my_ip: ${_param:single_address}
+      cache:
+        security:
+          enabled: ${_param:nova_memcache_security_enabled}
+          strategy: ${_param:openstack_memcache_security_strategy}
+          secret_key: ${_param:nova_memcache_secret_key}

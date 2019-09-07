@@ -1,0 +1,3 @@
+# Left for providing upgrade path
+classes:
+- system.docker.swarm.stack.jenkins.jnlp_slave_single

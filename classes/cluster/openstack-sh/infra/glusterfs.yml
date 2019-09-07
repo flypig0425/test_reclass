@@ -1,0 +1,12 @@
+classes:
+- service.keepalived.cluster.single
+- system.glusterfs.server.cluster
+- system.glusterfs.server.volume.salt_pki
+- system.glusterfs.server.volume.backup
+- system.glusterfs.server.volume.keystone
+- cluster.openstack-sh.cicd.gluster
+parameters:
+  _param:
+    keepalived_vip_interface: br-ctl
+    keepalived_vip_virtual_router_id: 69
+    glusterfs_allow_ips: 192.168.1.*

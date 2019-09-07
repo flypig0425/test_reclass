@@ -1,0 +1,71 @@
+classes:
+- system.keystone.client.core
+- system.keystone.client.service.cinder
+- system.keystone.client.service.cinder2
+- system.keystone.client.service.glance
+- system.keystone.client.service.heat
+- system.keystone.client.service.heat-cfn
+- system.keystone.client.service.neutron
+- system.keystone.client.service.nova21
+- system.keystone.client.service.nova-placement
+- system.keystone.client.service.cinder3
+- system.keystone.client.service.keystone
+- system.keystone.client.service.radosgw-swift
+- system.keystone.client.service.manila
+- system.keystone.client.service.manila2
+- system.manila.client
+- service.ironic.client
+- system.neutron.client.service.ironic
+- system.keystone.client.service.ironic
+- system.keystone.client.service.aodh
+- system.keystone.client.service.ceilometer
+- system.keystone.client.service.panko
+- system.keystone.client.service.gnocchi
+- system.gnocchi.client
+- system.gnocchi.client.v1.archive_policy.default
+- system.neutron.client.service.public_v2
+- system.keystone.client.service.designate
+- system.keystone.client.service.octavia
+- system.glance.client.image.octavia
+- system.nova.client.service.octavia
+- system.neutron.client.service.octavia.single
+parameters:
+  _param:
+    openstack_region: RegionOne
+    radosgw_swift_cluster_port: 8080
+    radosgw_service_host: ${_param:ceph_rgw_hostname}.${_param:cluster_domain}
+    keystone_swift_username: swift_VyYm9GAkie
+    keystone_swift_password: ${_param:keystone_swift_password_generated}
+    radosgw_service_protocol: https
+    # Unversioned endpoint for pike, queens
+    keystone_public_path: "/"
+    keystone_internal_path: "/"
+    keystone_admin_path: "/"
+    manila_share_type_default_extra_specs:
+      driver_handles_share_servers: False
+      snapshot_support: True
+      create_share_from_snapshot_support : True
+      mount_snapshot_support : True
+      revert_to_snapshot_support : True
+    ceilometer_endpoint_status: absent
+    apache_ssl:
+      enabled: true
+    cluster_internal_protocol: https
+    keystone_service_protocol: https
+    glance_service_protocol: ${_param:cluster_internal_protocol}
+    nova_service_protocol: ${_param:cluster_internal_protocol}
+    neutron_service_protocol: ${_param:cluster_internal_protocol}
+    heat_service_protocol: ${_param:cluster_internal_protocol}
+    cinder_service_protocol: ${_param:cluster_internal_protocol}
+    designate_service_protocol: ${_param:cluster_internal_protocol}
+    manila_service_protocol: ${_param:cluster_internal_protocol}
+    aodh_service_protocol: ${_param:cluster_internal_protocol}
+    panko_service_protocol: ${_param:cluster_internal_protocol}
+    gnocchi_service_protocol: ${_param:cluster_internal_protocol}
+    octavia_service_protocol: ${_param:cluster_internal_protocol}
+  #Keystone fernet and credential keys sync is performed via rsync as of now. Disable rotate in order to avoid duplicated cron jobs. PROD-19406
+  linux:
+    system:
+      job:
+        keystone_job_rotate:
+          enabled: False

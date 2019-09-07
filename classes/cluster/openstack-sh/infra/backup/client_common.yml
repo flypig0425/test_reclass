@@ -1,0 +1,12 @@
+classes:
+- system.backupninja.client.single
+- cluster.openstack-sh.infra.backup.allow_root_ssh
+parameters:
+  _param:
+    backupninja_backup_host: ${_param:infra_kvm_node03_address}
+  # for salt-master backup
+  backupninja:
+    client:
+      target:
+        home_dir: /srv/volumes/backup/backupninja
+        engine_opts: "-av --delete --recursive --safe-links"

@@ -1,0 +1,44 @@
+applications:
+- opencontrail
+classes:
+  - service.opencontrail.compute.single
+parameters:
+  _param:
+    opencontrail_version: 3.0
+    opencontrail_compute_iface_mask: 24
+  opencontrail:
+    common:
+      version: ${_param:opencontrail_version}
+      identity:
+        engine: keystone
+        host: ${_param:control_address}
+        port: ${_param:opencontrail_identity_port}
+        token: ${_param:keystone_service_token}
+        password: ${_param:keystone_admin_password}
+      network:
+        engine: neutron
+        host: ${_param:control_address}
+        port: 9696
+    compute:
+      discovery:
+        host: ${_param:control_address}
+  nova:
+    compute:
+      instance_build_timeout: ${_param:nova_instance_build_timeout}
+      network:
+        engine: keystone
+        host: ${_param:control_address}
+        user: ${_param:keystone_neutron_username}
+        password: ${_param:keystone_neutron_password}
+        tenant: service
+  neutron:
+    switch:
+      enabled: false
+      identity:
+        engine: keystone
+        host: ${_param:control_address}
+        port: 35357
+        user: ${_param:keystone_neutron_username}
+        password: ${_param:keystone_neutron_password}
+        tenant: service
+

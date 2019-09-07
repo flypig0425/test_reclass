@@ -1,0 +1,34 @@
+classes:
+- system.mysql.client.single
+- system.galera.server.database.cinder
+- system.galera.server.database.glance
+- system.galera.server.database.grafana
+- system.galera.server.database.manila
+- system.galera.server.database.ironic
+- system.galera.server.database.aodh
+- system.galera.server.database.panko
+- system.galera.server.database.gnocchi
+- system.galera.server.database.heat
+- system.galera.server.database.keystone
+- system.galera.server.database.nova
+- system.galera.server.database.neutron
+- system.galera.server.database.octavia
+- system.galera.server.database.designate
+- system.salt.minion.cert.mysql.server
+- service.galera.ssl.master
+- system.galera.server.database.x509.nova
+- system.galera.server.database.x509.keystone
+- system.galera.server.database.x509.heat
+- system.galera.server.database.x509.glance
+- system.galera.server.database.x509.neutron
+- system.galera.server.database.x509.octavia
+- system.galera.server.database.x509.cinder
+- system.galera.server.database.x509.designate
+- system.galera.server.database.x509.aodh
+- system.galera.server.database.x509.panko
+- system.galera.server.database.x509.gnocchi
+- system.galera.server.database.x509.manila
+#- haproxy.proxy.listen.openstack.galera.clustercheck
+- cluster.openstack-sh.infra
+- cluster.openstack-sh.openstack.networking.virtual
+

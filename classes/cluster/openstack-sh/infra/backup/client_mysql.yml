@@ -1,0 +1,14 @@
+classes:
+- system.xtrabackup.client.single
+- cluster.openstack-sh.infra.backup.allow_root_ssh
+parameters:
+  _param:
+    xtrabackup_client_throttle: 0
+    xtrabackup_remote_server: ${_param:infra_kvm_node03_address}
+  xtrabackup:
+    server:
+      enabled: false
+      backup_dir: /srv/volumes/backup/xtrabackup
+  mysql:
+    client:
+      backup_dir: /srv/volumes/backup/backupninja

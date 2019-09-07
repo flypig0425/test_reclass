@@ -1,0 +1,10 @@
+parameters:
+  _param:
+    backup_min: "0"
+    backup_hour: "*/12"
+    backup_day_of_month: "*"
+    backup_month: "*"
+    backup_day_of_week: "*"
+    zookeeper_remote_backup_server: cfg01
+    cassandra_remote_backup_server: cfg01
+    xtrabackup_client_throttle: 0 # disabled
