@@ -157,9 +157,9 @@ parameters:
     openstack_gateway_node01_deploy_address: ${_param:openstack_deploy_network_subset}.61
     openstack_gateway_node02_deploy_address: ${_param:openstack_deploy_network_subset}.62
     openstack_gateway_node03_deploy_address: ${_param:openstack_deploy_network_subset}.63
-    openstack_gateway_node01_tenant_address: ${_param:openstack_config_tenant_subset}.61
-    openstack_gateway_node02_tenant_address: ${_param:openstack_config_tenant_subset}.62
-    openstack_gateway_node03_tenant_address: ${_param:openstack_config_tenant_subset}.63
+    openstack_gateway_node01_tenant_address: ${_param:openstack_tenant_network_subset}.61
+    openstack_gateway_node02_tenant_address: ${_param:openstack_tenant_network_subset}.62
+    openstack_gateway_node03_tenant_address: ${_param:openstack_tenant_network_subset}.63
 
     openstack_share_address: ${_param:openstack_control_network_subset}.65
     openstack_share_node01_address: ${_param:openstack_control_network_subset}.66
