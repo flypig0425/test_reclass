@@ -3,7 +3,6 @@ parameters:
     cicd_control_network_subset: ${_param:infra_config_control_subset}
     cicd_deploy_network_subset: ${_param:infra_config_deploy_subset}
 
-    cicd_control_network_subset: ${_param:cicd_control_network_subset}
     cicd_control_address: ${_param:cicd_control_network_subset}.230
     cicd_control_node01_address: ${_param:cicd_control_network_subset}.231
     cicd_control_node02_address: ${_param:cicd_control_network_subset}.232
