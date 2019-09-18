@@ -69,6 +69,12 @@ parameters:
           pgp_num: 512
           type: replicated
           application: rgw
+
+        kubernetes: 
+          pg_num: 64
+          pgp_num: 64
+          type: replicated
+          application: rgw
 #          crush_rule: sata
 # customize to setup crush map
 #       crush:

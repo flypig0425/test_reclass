@@ -30,6 +30,9 @@ classes:
 - system.salt.control.cluster.ceph_mon_cluster
 - system.salt.control.cluster.ceph_rgw_cluster
 - system.salt.control.sizes.ceph
+# This may conflict with Openstack proxy nodes. When Openstack is enabled.
+# - system.salt.control.cluster.kubernetes_proxy_cluster
+- system.salt.control.cluster.kubernetes_control_cluster
 - cluster.openstack-sh.infra
 - cluster.openstack-sh.infra.networking.kvm
 parameters:

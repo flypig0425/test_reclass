@@ -223,3 +223,48 @@ parameters:
             ceph_crush_parent: rack01
             linux_system_codename: xenial
 
+        # k8s 
+        kubernetes_control_node01:
+          params:
+            tenant_address: ${_param:kubernetes_control_node01_tenant_address}
+            deploy_address: ${_param:kubernetes_control_node01_deploy_address}
+        kubernetes_control_node02:
+          params:
+            tenant_address: ${_param:kubernetes_control_node02_tenant_address}
+            deploy_address: ${_param:kubernetes_control_node02_deploy_address}
+        kubernetes_control_node03:
+          params:
+            tenant_address: ${_param:kubernetes_control_node03_tenant_address}
+            deploy_address: ${_param:kubernetes_control_node03_deploy_address}
+        kubernetes_proxy_node01:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:kubernetes_proxy_node01_deploy_address}
+        kubernetes_proxy_node02:
+          params:
+            linux_system_codename: xenial
+            deploy_address: ${_param:kubernetes_proxy_node02_deploy_address}
+        kubernetes_compute_rack01:
+          name: ${_param:kubernetes_compute_rack01_hostname}<<count>>
+          domain: ${_param:cluster_domain}
+          classes:
+          - cluster.${_param:cluster_name}.kubernetes.compute
+          repeat:
+            count: 100
+            ip_ranges:
+              single_address: 10.167.4.101-10.167.4.200
+              deploy_address: 10.6.15.101-10.6.15.200
+              tenant_address: 192.168.2.101-192.168.2.200
+            start: 1
+            digits: 3
+            params:
+              single_address:
+                value: <<single_address>>
+              deploy_address:
+                value: <<deploy_address>>
+              tenant_address:
+                value: <<tenant_address>>
+          params:
+            salt_master_host: ${_param:reclass_config_master}
+            linux_system_codename: xenial
+

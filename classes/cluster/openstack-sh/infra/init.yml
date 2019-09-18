@@ -9,6 +9,7 @@ classes:
 - system.salt.minion.single
 - system.rsyslog.client.single
 - cluster.openstack-sh.openstack
+- cluster.openstack-sh.kubernetes
 - system.linux.system.repo.mcp.apt_mirantis.fluentd
 - system.linux.system.repo.mcp.apt_mirantis.update.fluentd
 - system.fluentd

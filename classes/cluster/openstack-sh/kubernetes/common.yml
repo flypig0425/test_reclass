@@ -1,0 +1,38 @@
+classes:
+- system.linux.system.repo.mcp.apt_mirantis.docker
+- system.linux.system.repo.mcp.apt_mirantis.update.docker
+- system.linux.system.repo.mcp.apt_mirantis.kubernetes_extra
+- system.linux.system.repo.mcp.apt_mirantis.update.kubernetes_extra
+- system.kubernetes.pool.cluster
+- system.salt.minion.cert.k8s_client
+- system.salt.minion.cert.etcd_client
+
+parameters:
+  kubernetes:
+    pool:
+      proxy:
+        daemon_opts:
+          cluster-cidr: ${_param:calico_private_network}/${_param:calico_private_netmask}
+      network:
+        calico:
+          no_default_pools: False
+          etcd:
+            ssl:
+              enabled: True
+          policy:
+            enabled: False
+          prometheus:
+            enabled: true
+  linux:
+    system:
+      kernel:
+        sysctl:
+          # The default operating system limits on mmap counts is likely to be too low, which may result in out of memory exceptions.
+          vm.max_map_count: 262144
+    storage:
+      enabled: true
+      swap:
+        img:
+          enabled: false
+          engine: file
+          device: /swap.img

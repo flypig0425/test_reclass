@@ -28,3 +28,8 @@ parameters:
           caps:
             mon: 'allow r, allow command \"osd blacklist\"'
             osd: "profile rbd pool=${_param:gnocchi_storage_pool}"
+        kubernetes:
+          name: kubernetes
+          caps:
+            mon: "profile rbd"
+            osd: "profile rbd pool=kubernetes"
