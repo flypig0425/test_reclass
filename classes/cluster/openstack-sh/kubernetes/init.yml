@@ -3,6 +3,7 @@ parameters:
     # General
     kubernetes_control_network_subset: ${_param:infra_config_control_subset}
     kubernetes_deploy_network_subset: ${_param:infra_config_deploy_subset}
+    kubernetes_tenant_network_subset: ${_param:infra_config_tenant_subset}
 
     linux_system_codename: xenial
     salt_minion_ca_host: ${_param:infra_config_hostname}.${_param:cluster_domain}
@@ -19,7 +20,7 @@ parameters:
     kubernetes_dns_token: ${_param:kubernetes_dns_token_generated}
     etcd_initial_token: ${_param:etcd_initial_token_generated}
     kubernetes_rbd_user_id: kubernetes
-    kubernetes_rbd_user_key: kubernetes_key
+    kubernetes_rbd_user_key: AQBY6u1b/zkZNRAAcGd6GlaUkUvNHYT+GOKM9A==
     kubernetes_rbd_pool: kubernetes
     kubernetes_rbd_monitors: cmn01:6789,cmn02:6789,cmn03:6789
 
@@ -27,19 +28,19 @@ parameters:
     kubernetes_internal_api_address: 10.254.0.1
     kubernetes_internal_dns_address: 10.254.0.10
     kubernetes_control_hostname: ctl
-    kubernetes_control_address: ${_param:kubernetes_control_network_subset}.10
+    kubernetes_control_address: ${_param:kubernetes_control_network_subset}.130
     kubernetes_control_node01_hostname: ctl01
     kubernetes_control_node02_hostname: ctl02
     kubernetes_control_node03_hostname: ctl03
-    kubernetes_control_node01_address: ${_param:kubernetes_control_network_subset}.11
-    kubernetes_control_node02_address: ${_param:kubernetes_control_network_subset}.12
-    kubernetes_control_node03_address: ${_param:kubernetes_control_network_subset}.13
-    kubernetes_control_node01_deploy_address: ${_param:kubernetes_deploy_network_subset}.11
-    kubernetes_control_node02_deploy_address: ${_param:kubernetes_deploy_network_subset}.12
-    kubernetes_control_node03_deploy_address: ${_param:kubernetes_deploy_network_subset}.13
-    kubernetes_control_node01_tenant_address: 10.12.0.11
-    kubernetes_control_node02_tenant_address: 10.12.0.12
-    kubernetes_control_node03_tenant_address: 10.12.0.13
+    kubernetes_control_node01_address: ${_param:kubernetes_control_network_subset}.131
+    kubernetes_control_node02_address: ${_param:kubernetes_control_network_subset}.132
+    kubernetes_control_node03_address: ${_param:kubernetes_control_network_subset}.133
+    kubernetes_control_node01_deploy_address: ${_param:kubernetes_deploy_network_subset}.131
+    kubernetes_control_node02_deploy_address: ${_param:kubernetes_deploy_network_subset}.132
+    kubernetes_control_node03_deploy_address: ${_param:kubernetes_deploy_network_subset}.133
+    kubernetes_control_node01_tenant_address: ${_param:kubernetes_tenant_network_subset}.131
+    kubernetes_control_node02_tenant_address: ${_param:kubernetes_tenant_network_subset}.132
+    kubernetes_control_node03_tenant_address: ${_param:kubernetes_tenant_network_subset}.133
 
     # Openstack cluster already have proxy host 
     # kubernetes_proxy_hostname: prx
